@@ -19,23 +19,22 @@
         const [result, setResult] = React.useState('');
         const inputRef = React.useRef(null);
 
-        const onChangeInput = (e) => {
-          setValue(e.target.value);
-        };
-
         const onSubmitForm = (e) => {
-          e.preventDefault;
+          e.preventDefault();
           if (parseInt(value) === first * second) {
-            setResult('Result: ' + value);
+            setResult('Right! ' + value);
             setFirst(Math.ceil(Math.random() * 9));
             setSecond(Math.ceil(Math.random() * 9));
             setValue('');
             inputRef.current.focus();
           } else {
-            setResult('Result: ' + value);
+            setResult('X');
             setValue('');
             inputRef.current.focus();
           }
+        };
+        const onChangeInput = (e) => {
+          setValue(e.target.value);
         };
 
         return (
