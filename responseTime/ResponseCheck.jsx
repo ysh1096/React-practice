@@ -1,64 +1,57 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class ResponseCheck extends Component {
-  state = {
-    state: 'waiting',
-    message: 'Click to Start',
-    result: [],
-  };
-  timeout;
-  startTime;
-  endTime;
+const ResponseCheck = () => {
+  const [state, setState] = useState('waiting');
+  const [message, setMessage] = useState('click to start');
+  const [result, setResult] = useState([]);
+  const timeOut = useRef(null);
+  const startTime = useRef();
+  const endTime = useRef();
 
-  onClickScreen = () => {
-    const { state, message, result } = this.state;
+  const onClickScreen = () => {
     if (state === 'waiting') {
-      this.setState({
-        state: 'ready',
-        message: 'click on green',
-      });
-      this.timeout = setTimeout(() => {
-        this.setState({
-          state: 'now',
-          message: 'click now',
-        });
-        this.startTime = new Date();
+      setState('ready');
+      setMessage('click on green');
+      timeOut.current = setTimeout(() => {
+        setState('now');
+        setMessage('click now');
+        startTime.current = new Date();
       }, Math.floor(Math.random() * 1000) + 2000);
     } else if (state === 'ready') {
-      clearTimeout(this.timeout);
-      this.setState({
-        state: 'waiting',
-        message: 'too early, try agin',
-      });
+      clearTimeout(timeOut.current);
+      setState('waiting');
+      setMessage('too early, try agin');
     } else if (state === 'now') {
-      this.endTime = new Date();
-      this.setState((prevState) => {
-        return {
-          state: 'waiting',
-          message: 'click to start',
-          result: [...prevState.result, this.endTime - this.startTime],
-        };
+      endTime.current = new Date();
+      setState('waiting');
+      setMessage('Click to Start');
+      setResult((prevState) => {
+        return [...prevState, this.endTime - this.startTime];
       });
     }
   };
 
-  renderAverage = () => {
-    const { result } = this.state;
-    return this.state.result.length === 0 ? null : (
-      <div>Average Time: {this.state.result.reduce((a, c) => a + c) / this.state.result.length}ms</div>
+  const onReset = () => {
+    setResult([]);
+  };
+  const renderAverage = () => {
+    const { result } = state;
+    return state.result.length === 0 ? null : (
+      <>
+        <div>Average Time: {state.result.reduce((a, c) => a + c) / state.result.length}ms</div>
+        <button onClick={onReset}>Reset</button>
+      </>
     );
   };
 
-  render() {
-    const { state, message } = this.state;
-    return (
-      <>
-        <div id="screen" className={this.state.state} onClick={this.onClickScreen}>
-          {this.state.message}
-        </div>
-        {this.renderAverage()}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <div id="screen" className={state.state} onClick={onClickScreen}>
+        {state.message}
+      </div>
+      {renderAverage()}
+    </>
+  );
+};
+
 export default ResponseCheck;
